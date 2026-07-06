@@ -1,0 +1,52 @@
+Received: from mx1.victimcorp.example (mx1.victimcorp.example [192.168.10.5])
+	by inbox.victimcorp.example with ESMTP id a1B2c3D4
+	for <j.doe@victimcorp.example>; Tue, 07 Jul 2026 08:02:11 +0000
+Received: from mail.weeklydev.example (mail.weeklydev.example [198.51.100.20])
+	by mx1.victimcorp.example with ESMTP id z9Y8x7W6;
+	Tue, 07 Jul 2026 08:02:09 +0000
+Authentication-Results: mx1.victimcorp.example;
+	spf=pass smtp.mailfrom=weeklydev.example;
+	dkim=pass header.d=weeklydev.example;
+	dmarc=pass header.from=weeklydev.example
+Message-ID: <newsletter-2026-27@weeklydev.example>
+Date: Tue, 07 Jul 2026 08:02:08 +0000
+From: "Weekly Dev Digest" <digest@weeklydev.example>
+To: "Jane Doe" <j.doe@victimcorp.example>
+Subject: Weekly Dev Digest #142 - Python 3.14 highlights
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="NEWS-BOUNDARY-77"
+
+--NEWS-BOUNDARY-77
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Hi Jane,
+
+This week's top stories:
+
+1. Python 3.14 release highlights
+   https://weeklydev.example/articles/python-314-highlights
+
+2. Writing better dataclasses
+   https://weeklydev.example/articles/better-dataclasses
+
+You are receiving this because you subscribed at weeklydev.example.
+Unsubscribe: https://weeklydev.example/unsubscribe
+
+--NEWS-BOUNDARY-77
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <body>
+    <p>Hi Jane,</p>
+    <p>This week's top stories:</p>
+    <ol>
+      <li><a href="https://weeklydev.example/articles/python-314-highlights">Python 3.14 release highlights</a></li>
+      <li><a href="https://weeklydev.example/articles/better-dataclasses">Writing better dataclasses</a></li>
+    </ol>
+    <p><a href="https://weeklydev.example/unsubscribe">https://weeklydev.example/unsubscribe</a></p>
+  </body>
+</html>
+
+--NEWS-BOUNDARY-77--

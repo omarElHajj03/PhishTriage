@@ -1,0 +1,17 @@
+# Real API keys live here — never commit it. Use config.example.yaml as template.
+config.yaml
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Generated triage reports
+*_report.md
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

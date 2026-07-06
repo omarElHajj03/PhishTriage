@@ -1,0 +1,36 @@
+# PhishTriage configuration template.
+#
+# Copy this file to config.yaml and fill in your keys:
+#     cp config.example.yaml config.yaml
+#
+# config.yaml is gitignored so real keys never land in the repo.
+# If a key is left empty (or config.yaml doesn't exist), that service is
+# skipped and PhishTriage runs in offline mode.
+
+api_keys:
+  # Free key: https://www.virustotal.com/gui/my-apikey  (4 requests/minute)
+  virustotal: ""
+  # Free key: https://www.abuseipdb.com/account/api     (1000 checks/day)
+  abuseipdb: ""
+
+# Optional: override the verdict engine. Values below are the defaults —
+# uncomment and tune. Verdicts: score >= malicious -> Malicious,
+# score >= suspicious -> Suspicious, otherwise Likely Benign.
+#scoring:
+#  thresholds:
+#    malicious: 70
+#    suspicious: 35
+#  weights:
+#    spf_fail: 25
+#    dkim_fail: 15
+#    dmarc_fail: 25
+#    url_mismatch: 30
+#    reply_to_differs: 15
+#    risky_attachment: 20
+#    urgency_language: 10
+#    vt_url_hits_low: 25
+#    vt_url_hits_high: 50
+#    vt_hash_hits_low: 30
+#    vt_hash_hits_high: 60
+#    abuseipdb_medium: 20
+#    abuseipdb_high: 40
