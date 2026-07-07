@@ -138,11 +138,29 @@ heuristics-only verdicts are Medium/Low.
 
 ## Test samples
 
-Three synthetic `.eml` files in `samples/` (all domains use `.example`,
-all IPs are RFC 5737 documentation ranges — nothing resolves to real hosts):
+### Synthetic (all domains are `.example`, all IPs are RFC 5737 documentation
+ranges — nothing resolves to real hosts):
 
-| File | Expected verdict | What it demonstrates |
-|------|------------------|----------------------|
+| File | Offline verdict | What it demonstrates |
+|------|-----------------|----------------------|
 | `phish_invoice.eml` | Malicious (140) | full auth failure, Reply-To divergence, link mismatch, urgency lure, risky attachment |
+| `eicar_attachment.eml` | Malicious (80) | fake courier lure carrying the harmless [EICAR test file](https://www.eicar.org/download-anti-malware-testfile/) as `shipping_label.exe` — with API keys, VirusTotal flags its hash, exercising the intel scoring path |
 | `suspicious_password_reset.eml` | Suspicious (50) | SPF softfail + DKIM fail + urgency, but no smoking gun |
+| `bec_wire_transfer.eml` | Suspicious (50) | CEO-fraud / BEC: spoofed exec display name, Reply-To diverted to webmail, urgency — no links or attachments at all |
 | `benign_newsletter.eml` | Likely Benign (0) | clean auth, honest links |
+
+### Real-world (from the public [phishing_pot](https://github.com/rf-peixoto/phishing_pot)
+corpus of genuine phishing emails — recipient details sanitized by the corpus
+maintainer, but sender infrastructure, URLs, and lures are real; **do not
+visit any URL in these files**):
+
+| File | Lure | Why it's interesting |
+|------|------|----------------------|
+| `real_phish_1.eml` | credential phish | passes SPF (throwaway sending domain) — heuristics alone score it low; VirusTotal enrichment is what catches it |
+| `real_phish_2.eml` | fake Microsoft sign-in alert | no web URLs at all — every link is `mailto:` to a scammer's mailbox (reply-based scam) |
+| `real_phish_3.eml` | credential phish | authenticated sending infrastructure with a malicious payload URL |
+| `real_phish_4.eml` | advance-fee "donation" scam | pure social engineering, zero technical IOCs beyond headers |
+
+The real samples show an honest limitation: offline heuristics catch spoofing
+and header tricks, but well-run phishing campaigns authenticate correctly —
+that is exactly why the enrichment stage exists.

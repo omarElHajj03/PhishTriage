@@ -1,0 +1,36 @@
+Received: from mx1.victimcorp.example (mx1.victimcorp.example [192.168.10.5])
+	by inbox.victimcorp.example with ESMTP id w3E4r5T6
+	for <cfo@victimcorp.example>; Tue, 07 Jul 2026 16:22:44 +0000
+Received: from mailer.freewebmail.example (mailer.freewebmail.example [198.51.100.77])
+	by mx1.victimcorp.example with ESMTP id u5I6o7P8;
+	Tue, 07 Jul 2026 16:22:42 +0000
+Authentication-Results: mx1.victimcorp.example;
+	spf=softfail smtp.mailfrom=freewebmail.example;
+	dkim=none;
+	dmarc=none header.from=victimcorp-ceo.example
+Message-ID: <urgent-req-8812@mailer.freewebmail.example>
+Date: Tue, 07 Jul 2026 16:22:41 +0000
+From: "Robert Chen, CEO" <robert.chen@victimcorp-ceo.example>
+Reply-To: <r.chen.private@freewebmail.example>
+To: <cfo@victimcorp.example>
+Subject: Confidential - need this handled immediately
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Sarah,
+
+I'm in back-to-back meetings and can't talk, but this needs to be
+handled immediately. We're closing a confidential acquisition and I
+need you to process a wire transfer of $48,500 to the vendor's escrow
+account today. Action required before 5 PM or we lose the deal.
+
+I'll send the account details in my next message. Keep this between
+us until the deal is announced.
+
+Do not discuss this over the phone - I'm traveling and reception
+is poor.
+
+Robert Chen
+Chief Executive Officer
+Sent from my iPhone

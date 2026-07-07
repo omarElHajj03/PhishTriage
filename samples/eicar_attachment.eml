@@ -1,0 +1,39 @@
+Received: from mx1.victimcorp.example (mx1.victimcorp.example [192.168.10.5])
+ by inbox.victimcorp.example with ESMTP id r7T8u9V0 for
+ <j.doe@victimcorp.example>; Tue, 07 Jul 2026 14:05:33 +0000
+Received: from courier-updates.example (unknown [203.0.113.88]) by
+ mx1.victimcorp.example with ESMTP id s1D2f3G4; Tue, 07 Jul 2026 14:05:31
+ +0000
+Authentication-Results: mx1.victimcorp.example; spf=fail
+ smtp.mailfrom=courier-updates.example; dkim=none; dmarc=fail
+ header.from=fastcourier.example
+Message-ID: <track-20260707@courier-updates.example>
+Date: Tue, 07 Jul 2026 14:05:30 +0000
+From: "FastCourier Delivery" <tracking@fastcourier.example>
+To: "Jane Doe" <j.doe@victimcorp.example>
+Subject: Delivery failed - final notice: label attached
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============8409585533823955292=="
+
+--===============8409585533823955292==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Dear Customer,
+
+We could not deliver your parcel. This is your final notice.
+Print the attached shipping label and bring it to your local branch
+within 48 hours or the parcel will be returned to sender.
+
+FastCourier Support
+
+--===============8409585533823955292==
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="shipping_label.exe"
+MIME-Version: 1.0
+
+WDVPIVAlQEFQWzRcUFpYNTQoUF4pN0NDKTd9JEVJQ0FSLVNUQU5EQVJELUFOVElWSVJVUy1URVNU
+LUZJTEUhJEgrSCo=
+
+--===============8409585533823955292==--
