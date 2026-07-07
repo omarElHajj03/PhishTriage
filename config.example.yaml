@@ -1,11 +1,3 @@
-# PhishTriage configuration template.
-#
-# Copy this file to config.yaml and fill in your keys:
-#     cp config.example.yaml config.yaml
-#
-# config.yaml is gitignored so real keys never land in the repo.
-# If a key is left empty (or config.yaml doesn't exist), that service is
-# skipped and PhishTriage runs in offline mode.
 
 api_keys:
   # Free key: https://www.virustotal.com/gui/my-apikey  (4 requests/minute)
