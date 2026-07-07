@@ -176,7 +176,7 @@ def extract_urls(body_text: str, body_html: str) -> list[UrlIOC]:
             if href not in found or mismatch:
                 found[href] = ioc
 
-    # 2) Plain-text body — simple regex sweep.
+    # 2) Plain-text body.
     for raw in URL_RE.findall(body_text or ""):
         url = raw.rstrip(".,;)")
         found.setdefault(url, UrlIOC(url=url))

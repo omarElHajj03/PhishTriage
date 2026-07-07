@@ -68,7 +68,6 @@ def build_report(
     lines: list[str] = []
     add = lines.append
 
-    # ---- Header ----------------------------------------------------------
     add("# PhishTriage Report")
     add("")
     add(f"| | |")
@@ -84,7 +83,6 @@ def build_report(
     add(f"| **Date** | {_md_escape(email.date)} |")
     add("")
 
-    # ---- Verdict ---------------------------------------------------------
     add("## Verdict")
     add("")
     add(f"> ## {verdict.label}")
@@ -97,7 +95,6 @@ def build_report(
         add(f"- {_md_escape(reason)}")
     add("")
 
-    # ---- IOC table -------------------------------------------------------
     add("## Indicators of Compromise")
     add("")
     add("| Type | Value | Context |")
@@ -117,7 +114,6 @@ def build_report(
         add(f"| Attachment SHA256 | `{sha256}` | {_md_escape(filename)} |")
     add("")
 
-    # ---- Enrichment ------------------------------------------------------
     add("## Enrichment Details")
     add("")
     if not enrichment.online:
@@ -138,7 +134,6 @@ def build_report(
                 f"| {_md_escape(_rep_note(enrichment.sender_ip))} |")
         add("")
 
-    # ---- Recommended action ----------------------------------------------
     add("## Recommended Action")
     add("")
     add(RECOMMENDED_ACTIONS[verdict.label])
