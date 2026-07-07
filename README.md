@@ -130,9 +130,13 @@ Each rule that fires adds weighted points; the total maps to a verdict:
 
 Weights and thresholds are configurable under `scoring:` in `config.yaml`
 (see `config.example.yaml` for all knobs and defaults). Rules cover email
-authentication failures (SPF/DKIM/DMARC), Reply-To divergence, link
-display-text spoofing, urgency language, high-risk attachment extensions,
-and threat-intel hits from VirusTotal/AbuseIPDB. Confidence is reported
+authentication failures (SPF/DKIM/DMARC) — with partial points for
+weak/unverified states (`none`, `temperror`) since legitimate brands have
+all three configured — Reply-To divergence, brand impersonation (From
+display name claims a watchlist brand the From domain doesn't contain),
+link display-text spoofing, links on frequently-abused TLDs, urgency
+language, high-risk attachment extensions, and threat-intel hits from
+VirusTotal/AbuseIPDB. Confidence is reported
 separately: verdicts corroborated by external intel are High-confidence,
 heuristics-only verdicts are Medium/Low.
 
@@ -144,9 +148,9 @@ ranges — nothing resolves to real hosts):
 | File | Offline verdict | What it demonstrates |
 |------|-----------------|----------------------|
 | `phish_invoice.eml` | Malicious (140) | full auth failure, Reply-To divergence, link mismatch, urgency lure, risky attachment |
-| `eicar_attachment.eml` | Malicious (80) | fake courier lure carrying the harmless [EICAR test file](https://www.eicar.org/download-anti-malware-testfile/) as `shipping_label.exe` — with API keys, VirusTotal flags its hash, exercising the intel scoring path |
-| `suspicious_password_reset.eml` | Suspicious (50) | SPF softfail + DKIM fail + urgency, but no smoking gun |
-| `bec_wire_transfer.eml` | Suspicious (50) | CEO-fraud / BEC: spoofed exec display name, Reply-To diverted to webmail, urgency — no links or attachments at all |
+| `eicar_attachment.eml` | Malicious (88) | fake courier lure carrying the harmless [EICAR test file](https://www.eicar.org/download-anti-malware-testfile/) as `shipping_label.exe` — with API keys, VirusTotal flags its hash, exercising the intel scoring path |
+| `suspicious_password_reset.eml` | Suspicious (58) | SPF softfail + DKIM fail + urgency, but no smoking gun |
+| `bec_wire_transfer.eml` | Suspicious (66) | CEO-fraud / BEC: spoofed exec display name, Reply-To diverted to webmail, urgency — no links or attachments at all |
 | `benign_newsletter.eml` | Likely Benign (0) | clean auth, honest links |
 
 ### Real-world (from the public [phishing_pot](https://github.com/rf-peixoto/phishing_pot)
@@ -156,7 +160,7 @@ visit any URL in these files**):
 
 | File | Lure | Why it's interesting |
 |------|------|----------------------|
-| `real_phish_1.eml` | credential phish | passes SPF (throwaway sending domain) — heuristics alone score it low; VirusTotal enrichment is what catches it |
+| `real_phish_1.eml` | Bradesco (bank) credential phish | caught offline by brand impersonation + weak auth + abused-TLD rules; the campaign URL has aged out of VirusTotal |
 | `real_phish_2.eml` | fake Microsoft sign-in alert | no web URLs at all — every link is `mailto:` to a scammer's mailbox (reply-based scam) |
 | `real_phish_3.eml` | credential phish | authenticated sending infrastructure with a malicious payload URL |
 | `real_phish_4.eml` | advance-fee "donation" scam | pure social engineering, zero technical IOCs beyond headers |

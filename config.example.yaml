@@ -24,6 +24,11 @@ api_keys:
 #    spf_fail: 25
 #    dkim_fail: 15
 #    dmarc_fail: 25
+#    spf_none: 10          # SPF none/temperror/permerror (not verified)
+#    dkim_none: 8
+#    dmarc_none: 8
+#    suspicious_tld: 10    # link domain on the abused-TLD list
+#    brand_impersonation: 25  # display name claims a brand the From domain lacks
 #    url_mismatch: 30
 #    reply_to_differs: 15
 #    risky_attachment: 20
@@ -34,3 +39,5 @@ api_keys:
 #    vt_hash_hits_high: 60
 #    abuseipdb_medium: 20
 #    abuseipdb_high: 40
+#  # Brands checked by the impersonation rule (replaces the built-in list):
+#  brand_watchlist: [microsoft, paypal, bradesco, yourcompany]

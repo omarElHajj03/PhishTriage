@@ -24,6 +24,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from email.utils import parseaddr
+from urllib.parse import urlparse
 
 from enrich import EnrichmentResults
 from extractor import IOCs
@@ -36,6 +37,15 @@ DEFAULTS = {
         "spf_fail": 25,
         "dkim_fail": 15,
         "dmarc_fail": 25,
+        # Partial-credit states: "none" (no policy / no signature) and
+        # "temperror"/"permerror" (verification couldn't complete). Weaker
+        # evidence than an explicit fail, but a legit bank/brand would have
+        # all three configured — so they still earn points.
+        "spf_none": 10,
+        "dkim_none": 8,
+        "dmarc_none": 8,
+        "suspicious_tld": 10,
+        "brand_impersonation": 25,
         "url_mismatch": 30,
         "reply_to_differs": 15,
         "risky_attachment": 20,
@@ -52,6 +62,29 @@ DEFAULTS = {
         "suspicious": 35,   # score >= 35  -> Suspicious, else Likely Benign
     },
 }
+
+# Auth states meaning "not verified" rather than "verified bad" — no DMARC
+# policy published, no DKIM signature present, or a lookup error. Scored
+# lower than an explicit fail but not zero.
+WEAK_AUTH_STATES = {"none", "temperror", "permerror"}
+
+# TLDs disproportionately used by phishing campaigns (cheap/free to register,
+# lax abuse handling). Presence alone is only a weak signal, hence low weight.
+SUSPICIOUS_TLDS = {
+    "tk", "ml", "ga", "cf", "gq", "top", "xyz", "icu", "click",
+    "buzz", "cam", "rest", "surf", "monster", "pw", "me", "zip", "mov",
+}
+
+# Brands most frequently impersonated in phishing. If one of these appears
+# in the From *display name* but not in the From *domain*, the sender is
+# claiming an identity their domain doesn't back up. Extendable via
+# config.yaml -> scoring: brand_watchlist: [...].
+DEFAULT_BRAND_WATCHLIST = [
+    "microsoft", "office365", "outlook", "paypal", "apple", "icloud",
+    "amazon", "google", "gmail", "netflix", "docusign", "adobe",
+    "dhl", "fedex", "ups", "usps", "whatsapp", "facebook", "instagram",
+    "bradesco", "itau", "santander", "chase", "wellsfargo", "hsbc",
+]
 
 # Attachment extensions that rarely have a legitimate reason to be emailed.
 RISKY_EXTENSIONS = {
@@ -115,6 +148,24 @@ def score_email(
     if iocs.auth.dmarc == "fail":
         fire(w["dmarc_fail"], "DMARC policy failed — From domain alignment broken")
 
+    # Weak/absent auth states ("none", temperror, permerror) get partial
+    # points — but only when the receiving server actually published an
+    # Authentication-Results header. Without one, "none" just means "not
+    # evaluated" and penalizing it would flag every internal test email.
+    if email.auth_results:
+        if iocs.auth.spf in WEAK_AUTH_STATES:
+            fire(w["spf_none"],
+                 f"SPF not verified ({iocs.auth.spf}) — sender domain "
+                 "publishes no usable SPF record")
+        if iocs.auth.dkim in WEAK_AUTH_STATES:
+            fire(w["dkim_none"],
+                 f"DKIM not verified ({iocs.auth.dkim}) — message carries "
+                 "no valid signature")
+        if iocs.auth.dmarc in WEAK_AUTH_STATES:
+            fire(w["dmarc_none"],
+                 f"DMARC not verified ({iocs.auth.dmarc}) — From domain "
+                 "publishes no DMARC policy")
+
     # --- Rule group 2: header tricks -------------------------------------
     from_domain = parseaddr(email.from_addr)[1].partition("@")[2].lower()
     reply_domain = parseaddr(email.reply_to)[1].partition("@")[2].lower()
@@ -123,12 +174,37 @@ def score_email(
              f"Reply-To domain ({reply_domain}) differs from From domain "
              f"({from_domain}) — replies are diverted")
 
+    # Brand impersonation: the From display name claims a well-known brand
+    # ("BANCO DO BRADESCO") but the From domain doesn't contain it — the
+    # sender's domain doesn't back up the identity being displayed.
+    display_name = parseaddr(email.from_addr)[0].lower().replace(" ", "")
+    watchlist = (config or {}).get("scoring", {}).get(
+        "brand_watchlist", DEFAULT_BRAND_WATCHLIST)
+    for brand in watchlist:
+        if brand in display_name and brand not in from_domain:
+            fire(w["brand_impersonation"],
+                 f"Display name claims '{brand}' but From domain is "
+                 f"{from_domain or '(empty)'} — likely brand impersonation")
+            break  # one hit is enough; don't stack points per brand
+
     # --- Rule group 3: body content --------------------------------------
     for url in iocs.urls:
         if url.mismatch:
             fire(w["url_mismatch"],
                  f"Link text shows '{url.anchor_text}' but points to {url.url} "
                  "— classic display-text spoofing")
+
+    # Suspicious TLDs: flag each distinct link domain whose TLD is on the
+    # frequently-abused list (weak signal alone, so low weight).
+    seen_tlds: set[str] = set()
+    for url in iocs.urls:
+        host = (urlparse(url.url).hostname or "").lower()
+        tld = host.rsplit(".", 1)[-1] if "." in host else ""
+        if tld in SUSPICIOUS_TLDS and host not in seen_tlds:
+            seen_tlds.add(host)
+            fire(w["suspicious_tld"],
+                 f"Link domain {host} uses .{tld}, a TLD heavily abused "
+                 "by phishing campaigns")
 
     lure = URGENCY_RE.search(f"{email.subject}\n{email.body_text}")
     if lure:
